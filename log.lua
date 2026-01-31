@@ -66,7 +66,6 @@ local function GetItems()
 		CDK = false,
 		MIR = false,
 		VAL = false,
-		LEVER = false
 	}
 
 	for i, v in pairs(Inventory) do
@@ -79,8 +78,6 @@ local function GetItems()
 					items.MIR = true
 				elseif name == "Valkyrie Helm" then
 					items.VAL = true
-				elseif name == "Lever" then
-					items.LEVER = true
 				end
 			end
 		end
@@ -280,7 +277,6 @@ local function BuildAndSend()
 	table.insert(parts, "CDK[" .. check(items.CDK) .. "]")
 	table.insert(parts, "MIR[" .. check(items.MIR) .. "]")
 	table.insert(parts, "VAL[" .. check(items.VAL) .. "]")
-	table.insert(parts, "LEVER[" .. check(items.LEVER) .. "]")
 
 	table.insert(parts, "Lv." .. pdata.Level)
 
@@ -303,7 +299,6 @@ local function BuildAndSend()
 		CDK = items.CDK,
 		MIR = items.MIR,
 		VAL = items.VAL,
-		LEVER = items.LEVER
 	})
 
 	local ok, err = _G.Horst_SetDescription(description, encodeJson)
@@ -324,3 +319,12 @@ Data.Fragments.Changed:Connect(BuildAndSend)
 Data.DevilFruit.Changed:Connect(BuildAndSend)
 race.Changed:Connect(BuildAndSend)
 raceTier.Changed:Connect(BuildAndSend)
+
+task.spawn(function()
+	while not doneSent do
+		task.wait(1)
+		local items, rawInventory = GetItems()
+		local pdata = GetPlayerData()
+		TryDone(pdata, items, rawInventory)
+	end
+end)
